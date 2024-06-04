@@ -2,7 +2,8 @@ package main
 
 import (
 	baiaAPI "baia_service/api"
-	firebaseService "baia_service/firebase"
+	"baia_service/firebase/firestoreService"
+	"baia_service/firebase/realtimeService"
 	myOpenAi "baia_service/openai"
 	"fmt"
 	"io/ioutil"
@@ -46,12 +47,12 @@ func requestLogger(next http.Handler) http.Handler {
 		fmt.Printf("Received request: %s %s\n", r.Method, r.URL.Path)
 		fmt.Printf("Client IP: %s\n", clientIP)
 		fmt.Printf("User Agent: %s\n", r.UserAgent())
-		fmt.Printf("Headers:\n")
-		for name, values := range r.Header {
-			for _, value := range values {
-				fmt.Printf("  %s: %s\n", name, value)
-			}
-		}
+		// fmt.Printf("Headers:\n")
+		// for name, values := range r.Header {
+		// 	for _, value := range values {
+		// 		fmt.Printf("  %s: %s\n", name, value)
+		// 	}
+		// }
 
 		next.ServeHTTP(w, r)
 
@@ -67,8 +68,8 @@ type GPTRequest struct {
 
 func main() {
 	godotenv.Load()
-
-	fbClient, err := firebaseService.InitFirebase()
+	rtClient := realtimeService.InitFirebase()
+	fbClient := firestoreService.InitFirebase()
 	jsonMenuData, err := ioutil.ReadFile("jsons/menu.json")
 	if err != nil {
 		fmt.Println("Error at parsing menu json")
@@ -79,7 +80,7 @@ func main() {
 		fmt.Println("Error at parsing order json")
 	}
 
-	myOpenAi.InitOpenaiService(jsonMenuData, jsonOrdersData, fbClient)
+	myOpenAi.InitOpenaiService(jsonMenuData, jsonOrdersData, rtClient)
 	if err != nil {
 		fmt.Println("Error initializing Firebase")
 	}
@@ -93,7 +94,7 @@ func main() {
 			fmt.Printf("Starting server on port %d...\n", 8888)
 			http.ListenAndServe(fmt.Sprintf(":%d", 8888), router)
 		})
-		baiaAPI.RegisterEndPoints(api, fbClient)
+		baiaAPI.RegisterEndPoints(api, rtClient, fbClient)
 
 	})
 

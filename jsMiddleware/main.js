@@ -2,13 +2,20 @@
 const { Client, LocalAuth, Location, MessageMedia } = require('whatsapp-web.js');
 const fs = require('fs');
 const qrcode = require('qrcode-terminal');
+// const qrcode = require('qrcode');
 const axios = require('axios');
 const FormData = require('form-data');
 
 var mediaContador = 0;
 
 const client = new Client({
-    authStrategy: new LocalAuth()
+    authStrategy: new LocalAuth(),
+    webVersion: "2.2412.54",
+    webVersionCache: {
+        type: "remote",
+        remotePath:
+            "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+    },
 });
 
 async function sendGPTAudio(filePath, senderID) {
@@ -61,42 +68,48 @@ async function sendGPTMessage(mensaje, senderID) {
         return "Hubo un error"
     } else {
         const responseData = await response.json(); // Parse JSON response
-        console.log(responseData.toString());
-        return responseData["Answer"] // Print the parsed JSON data
+        return responseData["messages"] // Print the parsed JSON data
     }
 }
 
 client.on('message', async message => {
     console.log(message.from)
-    if(message.from === "5212223201384@c.us"){
-              console.log(message.body)
+    if (message.from === "5212223201384@c.us") {
+        console.log(message.body)
         console.log(message.from)
-      if(message.hasMedia){
-        console.log(message.hasMedia)
-        const msgmedia =  await message.downloadMedia()
-        console.log(msgmedia.filename)
-        const mediaLocalPath = "../audios/base64EncodedMedia/" + "audioNum" + mediaContador.toString()
-        fs.writeFile(
-            mediaLocalPath,
-            msgmedia.data,
-            "base64",
-            function (err) {
-              if (err) {
-                console.log(err);
-              }
-            }
-          );
-          const oggAudioPath = `../audios/mediaInOgg/audio${mediaContador}.ogg`
-          fs.writeFileSync(oggAudioPath, Buffer.from(msgmedia.data.replace(`data:audio/ogg; codecs=opus;base64,`, ''), 'base64'));
-        var answer = await sendGPTAudio(oggAudioPath, message.from)
-        message.reply(answer)
-        mediaContador++
+        if (message.hasMedia) {
+            console.log(message.hasMedia)
+            const msgmedia = await message.downloadMedia()
+            console.log(msgmedia.filename)
+            const mediaLocalPath = "../audios/base64EncodedMedia/" + "audioNum" + mediaContador.toString()
+            fs.writeFile(
+                mediaLocalPath,
+                msgmedia.data,
+                "base64",
+                function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                }
+            );
+            const oggAudioPath = `../audios/mediaInOgg/audio${mediaContador}.ogg`
+            fs.writeFileSync(oggAudioPath, Buffer.from(msgmedia.data.replace(`data:audio/ogg; codecs=opus;base64,`, ''), 'base64'));
+            var answer = await sendGPTAudio(oggAudioPath, message.from)
+            message.reply(answer)
+            mediaContador++
 
-    } else {
-        message.reply(await sendGPTMessage(message.body, message.from))
+        } else {
+            const responseMessages = await sendGPTMessage(message.body, message.from)
+            const messageFrom = message.from
+            console.log(JSON.stringify(responseMessages))
+            for(let i=0;i<responseMessages.length; i ++){
+                console.log(JSON.stringify(responseMessages[i]))
+                console.log("Message send")
+                client.sendMessage(messageFrom, responseMessages[i]['response'])
+            }
         }
-        }
-    if(message.body === "!ping"){
+    }
+    if (message.body === "!ping") {
         message.reply("pong")
     }
 
@@ -104,12 +117,29 @@ client.on('message', async message => {
 
 client.on('ready', async () => {
     console.log('Client is ready!');
-    // client.sendMessage(`@5212221882222`, )
-    
+    client.sendMessage('5212223201384@c.us', "Hola")
+
 });
 
 client.on('qr', qr => {
+    console.log("Generating qr...")
     qrcode.generate(qr, { small: true });
 });
+
+// client.on('qr', qr => {
+//     // qrcode.generate(qr, { small: true });
+//     console.log('QR RECEIVED', qr);
+
+//     // Genera el código QR y guárdalo como PNG
+//     qrcode.toFile('{clientName}.png', qr, {
+//         color: {
+//             dark: '#000000',  // Color de los puntos
+//             light: '#FFFFFF'  // Color de fondo
+//         }
+//     }, function (err) {
+//         if (err) throw err;
+//         console.log('QR code saved as qr-code.png');
+//     });
+// });
 
 client.initialize();
