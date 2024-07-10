@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"cloud.google.com/go/firestore"
 	"github.com/danielgtaylor/huma/v2"
 )
 
@@ -33,7 +34,7 @@ type uploadFileRequest struct {
 	RawBody multipart.Form
 }
 
-func RegisterEndPoints(api huma.API) {
+func RegisterEndPoints(api huma.API, fbClient *firestore.Client) {
 
 	huma.Register(api, huma.Operation{
 		OperationID:   "ask-about-order",
@@ -45,12 +46,16 @@ func RegisterEndPoints(api huma.API) {
 	}, func(ctx context.Context, input *struct {
 		Body *struct {
 			Question string `json:"question" example:"Hola"`
+			User     string `json:"senderID" example:"5212223201384@c.us"`
 		}
 	}) (*GPTResponse, error) {
 
 		response := GPTResponse{}
+		answer := utils.SendRequest(input.Body.Question, input.Body.User, fbClient)
+		response.Body.Answer = answer
 
-		response.Body.Answer = utils.SendRequest(input.Body.Question)
+		fmt.Println("********** MESSAGE **********")
+		fmt.Println(input.Body.User)
 		fmt.Println(input.Body.Question)
 		return &response, nil
 	})
@@ -63,8 +68,20 @@ func RegisterEndPoints(api huma.API) {
 		Tags:          []string{"BAIAudio"},
 		DefaultStatus: http.StatusCreated,
 	}, func(ctx context.Context, input *struct {
+		// No Body, expecting multipart.Form directly
 		RawBody multipart.Form
 	}) (*GPTResponse, error) {
+		// Verificar input.RawBody
+		if input.RawBody.File == nil {
+			return nil, huma.NewError(http.StatusBadRequest, "Request raw body is nil or does not contain files")
+		}
+
+		// Extract senderID from the form values
+		senderID := input.RawBody.Value["senderID"]
+		if len(senderID) == 0 {
+			return nil, huma.NewError(http.StatusBadRequest, "Sender ID is missing")
+		}
+
 		if err := os.MkdirAll("audios", os.ModePerm); err != nil {
 			return nil, huma.NewError(http.StatusInternalServerError, "Error creating 'audios' directory", err)
 		}
@@ -93,8 +110,14 @@ func RegisterEndPoints(api huma.API) {
 
 		audioPath := "audios/apiAudios/" + fileHeaders[0].Filename
 		translatedText := myOpenAi.Speech_to_text(audioPath)
-		answerFromGPT := myOpenAi.AskGpt(translatedText)
-		formatedAnswer := utils.FormatGPTResponse(answerFromGPT)
+
+		// Verificar fbClient
+		if fbClient == nil {
+			return nil, huma.NewError(http.StatusInternalServerError, "Firebase client is nil")
+		}
+
+		formatedAnswer := utils.SendRequest(translatedText, senderID[0], fbClient)
+
 		response := GPTResponse{}
 		response.Body.Answer = formatedAnswer
 

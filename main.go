@@ -2,6 +2,7 @@ package main
 
 import (
 	baiaAPI "baia_service/api"
+	firebaseService "baia_service/firebase"
 	myOpenAi "baia_service/openai"
 	"fmt"
 	"io/ioutil"
@@ -16,7 +17,6 @@ import (
 	"github.com/danielgtaylor/huma/v2/humacli"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
-	"github.com/sashabaranov/go-openai"
 )
 
 type Options struct {
@@ -68,6 +68,7 @@ type GPTRequest struct {
 func main() {
 	godotenv.Load()
 
+	fbClient, err := firebaseService.InitFirebase()
 	jsonMenuData, err := ioutil.ReadFile("jsons/menu.json")
 	if err != nil {
 		fmt.Println("Error at parsing menu json")
@@ -77,20 +78,10 @@ func main() {
 	if err != nil {
 		fmt.Println("Error at parsing order json")
 	}
-	myOpenAi.Req = openai.ChatCompletionRequest{
-		Model: openai.GPT3Dot5Turbo,
-		Messages: []openai.ChatCompletionMessage{
-			{
-				Role: openai.ChatMessageRoleSystem,
-				Content: `Te llamas Teseo y eres un útil asistente de un restaurante diseñado para leer pedidos, compararlos con el menú "
-						  y generar el pedido en formato JSON, asegúrate de que cada platillo de la orden del cliente
-						  tenga los campos 'id', 'nombre_platillo', 'precio_por_cada_uno' y 'cantidad', debes devolver
-						  un JSON con el siguiente formato: ` + string(jsonOrdersData) + ` si el usuario no ordena nada,
-						  regresa el JSON vacío. Menu: ` + string(jsonMenuData) + `Se muy amigable, recuerda que nos puedes
-						  ayudar a conseguir mas clientes si les caes bien, y no pongas tanto texto, se amable pero conciso
-						  al mismo tiempo. Responde siempre en español`,
-			},
-		},
+
+	myOpenAi.InitOpenaiService(jsonMenuData, jsonOrdersData, fbClient)
+	if err != nil {
+		fmt.Println("Error initializing Firebase")
 	}
 
 	cli := humacli.New(func(hook humacli.Hooks, options *Options) {
@@ -102,21 +93,8 @@ func main() {
 			fmt.Printf("Starting server on port %d...\n", 8888)
 			http.ListenAndServe(fmt.Sprintf(":%d", 8888), router)
 		})
-		baiaAPI.RegisterEndPoints(api)
-		// huma.Register(api, huma.Operation{
-		// 	OperationID:   "ask-about-order",
-		// 	Method:        http.MethodPost,
-		// 	Path:          "/baia/",
-		// 	Summary:       "Answers about your order",
-		// 	Tags:          []string{"BAIA"},
-		// 	DefaultStatus: http.StatusCreated,
-		// }, func(ctx context.Context, input *GPTRequest) (*GPTResponse, error) {
+		baiaAPI.RegisterEndPoints(api, fbClient)
 
-		// 	response := GPTResponse{}
-		// 	response.Body.Answer = utils.SendRequest(input.Body.Question)
-
-		// 	return &response, nil
-		// })
 	})
 
 	cli.Run()

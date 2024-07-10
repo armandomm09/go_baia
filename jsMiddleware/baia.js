@@ -64,7 +64,7 @@ async function sendGPTMessage(mensaje) {
 
 client.on('message', async message => {
     console.log(message.from)
-    if(message.from === "5212721873974@c.us"){
+    if(message.from === "5212223201384@c.us"){
               console.log(message.body)
         console.log(message.from)
       if(message.hasMedia){

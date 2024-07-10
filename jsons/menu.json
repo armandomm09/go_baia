@@ -1,95 +1,77 @@
 {
-    "nombre_restaurante": "El Sabor de Tlaxcala",
-    "platillos": [
+  "nombre_restaurante": "Sakura Sushi",
+  "platillos": [
       {
-        "id": 1,
-        "nombre_platillo": "Quesadillas de Huitlacoche",
-        "descripcion": "Tortillas de maíz rellenas de huitlacoche, queso fresco y epazote. Sirven con crema y salsa.",
-        "precio": 18.00
+          "id": 1,
+          "nombre_platillo": "Sashimi de Salmón",
+          "descripcion": "Lonchas frescas de salmón servidas con salsa de soja y wasabi.",
+          "precio": 18.00
       },
       {
-        "id": 2,
-        "nombre_platillo": "Tostadas de Tzompelicón",
-        "descripcion": "Tostadas de maíz crujiente con frijoles refritos, tzompelicón (carne de cerdo deshebrada) y salsa verde.",
-        "precio": 15.00
+          "id": 2,
+          "nombre_platillo": "Ramen de Tonkotsu",
+          "descripcion": "Ramen con caldo de cerdo, fideos, chashu, huevo, y cebolla verde.",
+          "precio": 15.00
       },
       {
-        "id": 3,
-        "nombre_platillo": "Ensalada de Nopales",
-        "descripcion": "Nopales asados ​​en juliana con cebolla, tomate, cilantro y un aderezo de limón y aceite de oliva.",
-        "precio": 12.00
+          "id": 3,
+          "nombre_platillo": "Tempura Mixta",
+          "descripcion": "Variedad de mariscos y verduras empanizados y fritos, servidos con salsa de tempura.",
+          "precio": 12.00
       },
       {
-        "id": 4,
-        "nombre_platillo": "Sopa de Xóchitl",
-        "descripcion": "Sopa cremosa a base de flor de Xóchitl con trozos de pollo y elote.",
-        "precio": 20.00
+          "id": 4,
+          "nombre_platillo": "Sushi Roll California",
+          "descripcion": "Roll de sushi con cangrejo, aguacate y pepino, cubierto con semillas de sésamo.",
+          "precio": 10.00
       },
       {
-        "id": 5,
-        "nombre_platillo": "Crema de Poblano",
-        "descripcion": "Crema de chile poblano con elote y cruetones.",
-        "precio": 18.00
+          "id": 5,
+          "nombre_platillo": "Yakitori",
+          "descripcion": "Brochetas de pollo a la parrilla con salsa teriyaki.",
+          "precio": 8.00
       },
       {
-        "id": 6,
-        "nombre_platillo": "Caldo Tlalpeño",
-        "descripcion": "Caldo con pollo, garbanzos, zanahorias, cebolla y cilantro.",
-        "precio": 15.00
+          "id": 6,
+          "nombre_platillo": "Gyoza",
+          "descripcion": "Empanadillas japonesas rellenas de cerdo y verduras, servidas con salsa de soja.",
+          "precio": 7.00
       },
       {
-        "id": 7,
-        "nombre_platillo": "Mole Poblano con Pollo",
-        "descripcion": "Pechuga de pollo con mole poblano tradicional, servido con arroz y frijoles.",
-        "precio": 25.00
+          "id": 7,
+          "nombre_platillo": "Donburi de Ternera",
+          "descripcion": "Tazón de arroz cubierto con ternera cocida en salsa dulce.",
+          "precio": 13.00
       },
       {
-        "id": 8,
-        "nombre_platillo": "Tacos de Carnitas",
-        "descripcion": "Tacos de carnitas de cerdo en tortillas de maíz con cebolla, cilantro y salsa.",
-        "precio": 18.00
+          "id": 8,
+          "nombre_platillo": "Miso Soup",
+          "descripcion": "Sopa de miso con tofu, algas y cebolla verde.",
+          "precio": 5.00
       },
       {
-        "id": 9,
-        "nombre_platillo": "Enchiladas Tlaxcaltecas",
-        "descripcion": "Enchiladas rellenas de pollo con salsa roja, crema, queso fresco y cebolla.",
-        "precio": 22.00
+          "id": 9,
+          "nombre_platillo": "Matcha Ice Cream",
+          "descripcion": "Helado de té verde matcha.",
+          "precio": 6.00
       },
       {
-        "id": 10,
-        "nombre_platillo": "Churros con Chocolate",
-        "descripcion": "Churros recién hechos con chocolate caliente.",
-        "precio": 12.00
+          "id": 10,
+          "nombre_platillo": "Mochi",
+          "descripcion": "Bolas de masa de arroz rellenas de helado, en varios sabores.",
+          "precio": 8.00
       },
       {
-        "id": 11,
-        "nombre_platillo": "Flan de Nuez",
-        "descripcion": "Flan casero con un toque de nuez.",
-        "precio": 15.00
+          "id": 11,
+          "nombre_platillo": "Té Verde",
+          "descripcion": "Té verde japonés caliente.",
+          "precio": 3.00
       },
       {
-        "id": 12,
-        "nombre_platillo": "Helados Tradicionales",
-        "descripcion": "Helados de sabores variados como vainilla, chocolate, fresa y nuez.",
-        "precio": 10.00
-      },
-      {
-        "id": 13,
-        "nombre_platillo": "Agua Fresca de Jamaica",
-        "descripcion": "Agua fresca de jamaica casera.",
-        "precio": 10.00
-      },
-      {
-        "id": 14,
-        "nombre_platillo": "Horchata",
-        "descripcion": "Horchata de arroz casera.",
-        "precio": 12.00
-      },
-      {
-        "id": 15,
-        "nombre_platillo": "Cerveza Local",
-        "descripcion": "Selección de cervezas artesanales locales.",
-        "precio": 20.00
+          "id": 12,
+          "nombre_platillo": "Sake",
+          "descripcion": "Vino de arroz japonés, servido frío o caliente.",
+          "precio": 9.00
       }
-    ]
-  }
+  ]
+}

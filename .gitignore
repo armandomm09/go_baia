@@ -5,3 +5,5 @@
 /jsMiddleware/.wwebjs_cache/
 /jsMiddleware/.wwebjs_cache
 /audios
+.DS_Store
+.idea

@@ -1,10 +1,13 @@
 package utils
 
 import (
+	firebaseService "baia_service/firebase"
 	myOpenAi "baia_service/openai"
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"cloud.google.com/go/firestore"
 )
 
 type Platillo struct {
@@ -18,14 +21,20 @@ type Orden struct {
 	Orden []Platillo `json:"orden"`
 }
 
-func SendRequest(sentMessage string) string {
+func SendRequest(sentMessage string, senderID string, fbClient *firestore.Client) string {
 
 	var finalAnswer string
 	// Extraer el valor del cuerpo del mensaje
+	firebaseService.SaveRawUserMessage(sentMessage, senderID, fbClient) // Use senderID from form values
 
-	answerFromGPT := myOpenAi.AskGpt(sentMessage)
+	answerFromGPT := myOpenAi.AskGpt(sentMessage, senderID)
+	firebaseService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
+
 	finalAnswer = FormatGPTResponse(answerFromGPT)
 
+	firebaseService.SaveBAIAMessage(finalAnswer, senderID, fbClient)
+
+	firebaseService.SaveUserMessage(sentMessage, senderID, fbClient) // Use senderID from form values
 	// Procesar el cuerpo del mensaje
 	// Responder a la solicitud de ngrok
 	return finalAnswer
