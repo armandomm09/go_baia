@@ -2,6 +2,7 @@
 .env
 /jsMiddleware/.wwebjs_auth/
 /jsMiddleware/node_modules/
+/jsMiddleware/node_modules
 /jsMiddleware/.wwebjs_cache/
 /jsMiddleware/.wwebjs_cache
 /audios

@@ -1,0 +1,28 @@
+{
+    "messages": [
+        {
+            "response": "Gracias por tu orden. Aquí tienes el resumen de tu pedido:",
+            "isImage": false
+        },
+        {
+            "response": "- **2 Miso Soup** \n- **1 Donburi de Ternera**",
+            "isImage": false
+        },
+        {
+            "response": "Aquí está tu pedido: ",
+            "isImage": false
+        },
+        {
+            "response": "- Miso Soup (x2): $10.00 \n- Donburi de Ternera (x1): $13.00",
+            "isImage": false
+        },
+        {
+            "response": "El total a pagar es: $23.0",
+            "isImage": false
+        },{
+            "response": "¿Te gustaría agregar algo más para acompañar? ¡Aprovecha que tenemos delicias japonesas en nuestro menú!",
+            "isImage": false
+
+        }
+    ]
+}

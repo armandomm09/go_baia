@@ -1,0 +1,33 @@
+{
+    "messages": [
+        {
+            "response": "Gracias por tu orden. Aquí tienes el resumen de tu pedido:",
+            "afterOrder": false,
+            "isImage": false
+        },
+        {
+            "response": "El total a pagar es: $23.0",
+            "afterOrder": true,
+            "isImage": false
+        },{
+            "response": "¿Te gustaría agregar algo más para acompañar? ¡Aprovecha que tenemos delicias japonesas en nuestro menú!",
+            "afterOrder": true,
+            "isImage": false
+
+        }
+    ],
+    "orden": [
+        {
+            "id": 8,
+            "nombre_platillo": "Miso Soup",
+            "precio_por_cada_uno": 5.0,
+            "cantidad": 2
+        },
+        {
+            "id": 7,
+            "nombre_platillo": "Donburi de Ternera",
+            "precio_por_cada_uno": 13.0,
+            "cantidad": 1
+        }
+    ]
+}
