@@ -55,7 +55,11 @@ func AskGpt(message string, senderID string) string {
 		fmt.Println("Error at parsing order json")
 	}
 
-	exampleResponse := "¡Perfecto! Entonces tenemos:- **1 Miso Soup**- **2 Sakes**Aquí está tu pedido:```json{    " + "orden" + ": [        {            " + "id" + ": 8,            " + "nombre_platillo" + ": " + "Miso Soup" + ",            " + "precio_por_cada_uno" + ": 5.00,            " + "cantidad" + ": 1        },        {            " + "id" + ": 12,            " + "nombre_platillo" + ": " + "Sake" + ",            " + "precio_por_cada_uno" + ": 9.00,            " + "cantidad" + ": 2        }    ]}```¿Te gustaría agregar algo más para acompañar? ¡Aprovecha que tenemos delicias japonesas en nuestro menú!"
+	jsonOrderFotoData, err := ioutil.ReadFile("jsons/orders/fotoResultEG.json")
+	if err != nil {
+		fmt.Println("Error at parsing order json")
+	}
+
 	Req := openai.ChatCompletionRequest{
 		Model: openai.GPT4oMini,
 		Messages: []openai.ChatCompletionMessage{
@@ -66,12 +70,17 @@ func AskGpt(message string, senderID string) string {
 				tenga los campos 'id', 'nombre_platillo', 'precio_por_cada_uno' y 'cantidad', debes devolver
 				un JSON con el siguiente formato: ` + string(jsonOrdersData) + ` si el usuario no ordena nada,
 				regresa el JSON vacío.Toma en cuenta que ese es un json de ejemplo, pero textualmente, se creativo y diferente con tu lenguaje. 
-				Este es el menu: ` + string(jsonMenuData) + `Se muy amigable, recuerda que nos puedes
+				Este es el menu: ` + string(jsonMenuData) + `. Cuando te pidan ver el menu, en vez de dar ell json del menu,
+				regresa el mismo json de formato que te decia, y en algun mensaje, enseñas el menu. Se muy amigable, recuerda que nos puedes
 				ayudar a conseguir mas clientes si les caes bien, y no pongas tanto texto, se amable pero conciso
 				al mismo tiempo. Responde siempre en español y NO digas cosas como 'Aqui esta tu pedido en formato JSON'
 				solo di 'Aqui esta tu pedido' o de alguna otra forma. Uno de tus propositos es incitar a comprar aunque te digan que no quieren.
 				Cuando el usuario termine de hacer su orden, es muy importante que mandes un mensaje que diga "ORDEN COMPLETA", pero antes de eso tienes que
-				preguntarle y asegurarte de que en serio haya acabado su pedido un ejemplo de como terminas tu orden es asi: ` + exampleResponse,
+				preguntarle y asegurarte de que en serio haya acabado su pedido. Cuando te digan que agrueges algo mas a su orden, 
+				en vez de solo decirles que lo agregaste, enseñales la orden y invitalos a comprar algo para acompañar eso.
+				Cuando vayas a enseñar el menu no mandes fotos, solo cuando vayas a hablar de pocos productos, no todos.
+				Y para mandar foto , en el "response" solo pones el link y el isImage en true, en ese mensaje no agregues mas texto
+				Aqui un ejemplo: ` + string(jsonOrderFotoData),
 			},
 		},
 	}

@@ -17,7 +17,7 @@ client.on('message', async message => {
     console.log(message.body);
     console.log(message.type);
     // if((message.from === '5212222150794@c.us' || message.from === '5212223201384@c.us') && message.hasMedia){
-    //     const newMedia = await message.downloadMedia()
+        // const newMedia = await message.downloadMedia()
     //     client.sendMessage('5212222150794@c.us', newMedia)
 
     // }

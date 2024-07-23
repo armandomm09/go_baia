@@ -2,9 +2,8 @@
 .env
 /jsMiddleware/.wwebjs_auth/
 /jsMiddleware/node_modules/
-/jsMiddleware/node_modules
 /jsMiddleware/.wwebjs_cache/
-/jsMiddleware/.wwebjs_cache
+go_baia.git/
 /audios
 .DS_Store
 .idea

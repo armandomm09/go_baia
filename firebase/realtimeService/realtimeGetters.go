@@ -16,7 +16,7 @@ type Message struct {
 func GetUserChatHistory(userID string, client *db.Client, Req openai.ChatCompletionRequest) openai.ChatCompletionRequest {
 	ctx := context.Background()
 
-	ref := client.NewRef(fmt.Sprintf("El_Sabor_de_Tlaxcala/conversations/%s/messages/Conversation", userID))
+	ref := client.NewRef(fmt.Sprintf("El_Sabor_de_Tlaxcala/conversations/%s/messages/rawConversation", userID))
 	var messages map[string]map[string]interface{}
 	if err := ref.Get(ctx, &messages); err != nil {
 		fmt.Println("Error getting documents:", err)

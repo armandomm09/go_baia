@@ -1,5 +1,5 @@
 // archivo principal
-const { Client, LocalAuth, Location, MessageMedia } = require('whatsapp-web.js');
+const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const fs = require('fs');
 const qrcode = require('qrcode-terminal');
 // const qrcode = require('qrcode');
@@ -102,10 +102,15 @@ client.on('message', async message => {
             const responseMessages = await sendGPTMessage(message.body, message.from)
             const messageFrom = message.from
             console.log(JSON.stringify(responseMessages))
-            for(let i=0;i<responseMessages.length; i ++){
-                console.log(JSON.stringify(responseMessages[i]))
-                console.log("Message send")
-                client.sendMessage(messageFrom, responseMessages[i]['response'])
+            for (let i = 0; i < responseMessages.length; i++) {
+                if (responseMessages[i]["isImage"]) {
+                    let imageToSend = await MessageMedia.fromUrl(responseMessages[i]["response"])
+                    await client.sendMessage(messageFrom, imageToSend)
+                } else {
+                    console.log(JSON.stringify(responseMessages[i]))
+                    console.log("Message send")
+                    await client.sendMessage(messageFrom, responseMessages[i]['response'])
+                }
             }
         }
     }
@@ -117,7 +122,7 @@ client.on('message', async message => {
 
 client.on('ready', async () => {
     console.log('Client is ready!');
-    client.sendMessage('5212223201384@c.us', "Hola")
+    await client.sendMessage('5212223201384@c.us', "hola")
 
 });
 

@@ -1,0 +1,20 @@
+{
+    "messages": [
+        {
+            "response": "Mira, este es una foto del miso soup, a ver si te animas a probarla",
+            "afterOrder": false,
+            "isImage": false
+        },
+        {
+            "response": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FMiso%20Soup.jpeg?alt=media&token=a51ba768-78cc-441f-9ce3-4761ff607eb8",
+            "afterOrder": false,
+            "isImage": true
+        },{
+            "response": "Como la ves? Animate a probarlaa",
+            "afterOrder": false,
+            "isImage": false
+
+        }
+    ],
+    "orden": []
+}

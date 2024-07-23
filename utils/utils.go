@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"baia_service/firebase/realtimeService"
 	myOpenAi "baia_service/openai"
 	"encoding/json"
 	"fmt"
@@ -51,11 +52,11 @@ type Orden struct {
 func SendRequest(sentMessage string, senderID string, fbClient *db.Client) string {
 	var finalAnswer Output
 
-	// go realtimeService.SaveRawUserMessage(sentMessage, senderID, fbClient)
+	go realtimeService.SaveRawUserMessage(sentMessage, senderID, fbClient)
 
 	answerFromGPT := myOpenAi.AskGpt(sentMessage, senderID)
 
-	// go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
+	go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
 
 	var input Input
 	if err := json.Unmarshal([]byte(answerFromGPT), &input); err != nil {
