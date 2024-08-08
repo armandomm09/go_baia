@@ -1,23 +1,21 @@
 package main
 
 import (
-	baiaAPI "baia_service/api"
-	"baia_service/firebase/firestoreService"
-	"baia_service/firebase/realtimeService"
-	myOpenAi "baia_service/openai"
+	fiberapi "baia_service/fiberAPI"
+	"context"
 	"fmt"
-	"io/ioutil"
+	"log"
+	"os"
 	"time"
 
 	// 	"baia_service/utils"
 
 	"net/http"
 
-	"github.com/danielgtaylor/huma/v2"
-	"github.com/danielgtaylor/huma/v2/adapters/humachi"
-	"github.com/danielgtaylor/huma/v2/humacli"
-	"github.com/go-chi/chi/v5"
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Options struct {
@@ -68,35 +66,66 @@ type GPTRequest struct {
 
 func main() {
 	godotenv.Load()
-	rtClient := realtimeService.InitFirebase()
-	fbClient := firestoreService.InitFirebase()
-	jsonMenuData, err := ioutil.ReadFile("jsons/menu.json")
+	//************MONGO
+
+	uri := os.Getenv("MONGODB_URI")
+
+	if uri == "" {
+		log.Fatal("No ENV variable")
+	}
+	client, err := mongo.Connect(context.TODO(), options.Client().
+		ApplyURI(uri))
 	if err != nil {
-		fmt.Println("Error at parsing menu json")
+		panic(err)
 	}
 
-	jsonOrdersData, err := ioutil.ReadFile("jsons/orders/order.json")
-	if err != nil {
-		fmt.Println("Error at parsing order json")
-	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 
-	myOpenAi.InitOpenaiService(jsonMenuData, jsonOrdersData, rtClient)
-	if err != nil {
-		fmt.Println("Error initializing Firebase")
-	}
+	app := fiber.New()
 
-	cli := humacli.New(func(hook humacli.Hooks, options *Options) {
-		router := chi.NewMux()
-		router.Use(requestLogger)
-		api := humachi.New(router, huma.DefaultConfig("My First API", "1.0.0"))
+	app = fiberapi.RegisterEndPoints(app, client)
 
-		hook.OnStart(func() {
-			fmt.Printf("Starting server on port %d...\n", 8888)
-			http.ListenAndServe(fmt.Sprintf(":%d", 8888), router)
-		})
-		baiaAPI.RegisterEndPoints(api, rtClient, fbClient)
+	app.Listen(":3000")
 
-	})
-
-	cli.Run()
 }
+
+//***********************FIREBASE AND HUMA
+// func main() {
+// 	godotenv.Load()
+
+// 	rtClient := realtimeService.InitFirebase()
+// 	fbClient := firestoreService.InitFirebase()
+// 	jsonMenuData, err := ioutil.ReadFile("jsons/menu.json")
+// 	if err != nil {
+// 		fmt.Println("Error at parsing menu json")
+// 	}
+
+// 	jsonOrdersData, err := ioutil.ReadFile("jsons/orders/order.json")
+// 	if err != nil {
+// 		fmt.Println("Error at parsing order json")
+// 	}
+
+// 	myOpenAi.InitOpenaiService(jsonMenuData, jsonOrdersData, rtClient)
+// 	if err != nil {
+// 		fmt.Println("Error initializing Firebase")
+// 	}
+
+// 	cli := humacli.New(func(hook humacli.Hooks, options *Options) {
+// 		router := chi.NewMux()
+// 		router.Use(requestLogger)
+// 		api := humachi.New(router, huma.DefaultConfig("My First API", "1.0.0"))
+
+// 		hook.OnStart(func() {
+// 			fmt.Printf("Starting server on port %d...\n", 8888)
+// 			http.ListenAndServe(fmt.Sprintf(":%d", 8888), router)
+// 		})
+// 		baiaAPI.RegisterEndPoints(api, rtClient, fbClient)
+
+// 	})
+
+// 	cli.Run()
+// }

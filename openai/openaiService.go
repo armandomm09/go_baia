@@ -1,7 +1,7 @@
 package myOpenAi
 
 import (
-	"baia_service/firebase/realtimeService"
+	"baia_service/mongoService"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -10,6 +10,7 @@ import (
 
 	"firebase.google.com/go/v4/db"
 	"github.com/sashabaranov/go-openai"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Message struct {
@@ -43,7 +44,7 @@ func InitOpenaiService(jsonMenuData []byte, jsonOrdersData []byte, newFbClient *
 	fbClient = newFbClient
 }
 
-func AskGpt(message string, senderID string) string {
+func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 
 	jsonMenuData, err := ioutil.ReadFile("jsons/menu.json")
 	if err != nil {
@@ -95,8 +96,8 @@ func AskGpt(message string, senderID string) string {
 	Req.ResponseFormat = &openai.ChatCompletionResponseFormat{
 		Type: openai.ChatCompletionResponseFormatTypeJSONObject,
 	}
-	Req = realtimeService.GetUserChatHistory(senderID, fbClient, Req)
-
+	// Req = realtimeService.GetUserChatHistory(senderID, fbClient, Req)
+	Req = mongoService.GetUserChatHistory(userID, mongoClient, Req)
 	Req.Messages = append(Req.Messages, openai.ChatCompletionMessage{
 		Role:    openai.ChatMessageRoleUser,
 		Content: message,

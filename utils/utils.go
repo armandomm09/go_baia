@@ -1,105 +1,69 @@
 package utils
 
 import (
-	"baia_service/firebase/realtimeService"
+	"baia_service/mongoService"
 	myOpenAi "baia_service/openai"
+	baiaStructs "baia_service/structs"
 	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
 
-	"firebase.google.com/go/v4/db"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type Message struct {
-	Response   string `json:"response"`
-	AfterOrder bool   `json:"afterOrder,omitempty"`
-	IsImage    bool   `json:"isImage"`
-}
+func SendRequest(sentMessage string, senderID string, client *mongo.Client) baiaStructs.FinalGPTResponse {
+	var finalAnswer baiaStructs.FinalGPTResponse
+	// go realtimeService.SaveRawUserMessage(sentMessage, senderID, fbClient)
 
-type Order struct {
-	ID               int     `json:"id"`
-	NombrePlatillo   string  `json:"nombre_platillo"`
-	PrecioPorCadaUno float64 `json:"precio_por_cada_uno"`
-	Cantidad         int     `json:"cantidad"`
-}
+	answerFromGPT := myOpenAi.AskGpt(sentMessage, senderID, client)
 
-type Input struct {
-	Messages []Message `json:"messages"`
-	Orden    []Order   `json:"orden"`
-}
+	// go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
 
-type OutputMessage struct {
-	Response string `json:"response"`
-	IsImage  bool   `json:"isImage"`
-}
-
-type Output struct {
-	Messages []OutputMessage `json:"messages"`
-}
-
-type Platillo struct {
-	ID               int     `json:"id"`
-	NombrePlatillo   string  `json:"nombre_platillo"`
-	PrecioPorCadaUno float64 `json:"precio_por_cada_uno"`
-	Cantidad         int     `json:"cantidad"`
-}
-
-type Orden struct {
-	Orden []Platillo `json:"orden"`
-}
-
-func SendRequest(sentMessage string, senderID string, fbClient *db.Client) string {
-	var finalAnswer Output
-
-	go realtimeService.SaveRawUserMessage(sentMessage, senderID, fbClient)
-
-	answerFromGPT := myOpenAi.AskGpt(sentMessage, senderID)
-
-	go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
-
-	var input Input
+	var input baiaStructs.GPTUnformattedResponse
 	if err := json.Unmarshal([]byte(answerFromGPT), &input); err != nil {
 		log.Printf("Error unmarshalling GPT response: %v", err)
-		return answerFromGPT
+		var output baiaStructs.FinalGPTResponse
+		output.Messages[0].Response = answerFromGPT
+		return output
 	}
 
 	finalAnswer = transform(input)
-
+	go mongoService.SaveBAIAMessage(finalAnswer, senderID, client)
 	// go realtimeService.SaveBAIAMessage(finalAnswer, senderID, fbClient)
 
 	// go realtimeService.SaveUserMessage(sentMessage, senderID, fbClient) // Use senderID from form values
 
-	finalAnswerJSON, err := json.Marshal(finalAnswer)
-	if err != nil {
-		log.Printf("Error marshalling final answer: %v", err)
-		return answerFromGPT
-	}
+	// finalAnswerJSON, err := json.Marshal(finalAnswer)
+	// if err != nil {
+	// 	log.Printf("Error marshalling final answer: %v", err)
+	// 	return answerFromGPT
+	// }
 
-	return string(finalAnswerJSON)
+	return finalAnswer
 }
 
-func transform(input Input) Output {
-	var output Output
+func transform(input baiaStructs.GPTUnformattedResponse) baiaStructs.FinalGPTResponse {
+	var output baiaStructs.FinalGPTResponse
 	var orderSummary string
 	var total float64
 
 	for _, msg := range input.Messages {
 		if !msg.AfterOrder {
-			output.Messages = append(output.Messages, OutputMessage{
+			output.Messages = append(output.Messages, baiaStructs.OutputMessage{
 				Response: msg.Response,
 				IsImage:  msg.IsImage,
 			})
 		}
 	}
 
-	for _, order := range input.Orden {
+	for _, order := range input.Order {
 		orderSummary += fmt.Sprintf("- %s (x%d): $%.2f \n", order.NombrePlatillo, order.Cantidad, order.PrecioPorCadaUno*float64(order.Cantidad))
 		total += order.PrecioPorCadaUno * float64(order.Cantidad)
 	}
 
 	if orderSummary != "" {
-		output.Messages = append(output.Messages, OutputMessage{
+		output.Messages = append(output.Messages, baiaStructs.OutputMessage{
 			Response: orderSummary[:len(orderSummary)-1],
 			IsImage:  false,
 		})
@@ -108,12 +72,12 @@ func transform(input Input) Output {
 	for _, msg := range input.Messages {
 		if msg.AfterOrder {
 			if msg.Response == fmt.Sprintf("El total a pagar es: $%.1f", total) {
-				output.Messages = append(output.Messages, OutputMessage{
+				output.Messages = append(output.Messages, baiaStructs.OutputMessage{
 					Response: msg.Response,
 					IsImage:  msg.IsImage,
 				})
 			} else {
-				output.Messages = append(output.Messages, OutputMessage{
+				output.Messages = append(output.Messages, baiaStructs.OutputMessage{
 					Response: msg.Response,
 					IsImage:  msg.IsImage,
 				})
@@ -146,7 +110,7 @@ func FormatGPTResponse(text string) string {
 }
 
 func formatOrderFromJson(orderJson string) (string, error) {
-	var orden Orden
+	var orden baiaStructs.Order
 	if err := json.Unmarshal([]byte(orderJson), &orden); err != nil {
 		fmt.Println("ERROR AT PARSING JSON")
 		return "", err
@@ -154,7 +118,7 @@ func formatOrderFromJson(orderJson string) (string, error) {
 
 	var output strings.Builder
 	var total float64
-	for _, platillo := range orden.Orden {
+	for _, platillo := range orden.Order {
 		subtotal := platillo.PrecioPorCadaUno * float64(platillo.Cantidad)
 		total += subtotal
 		output.WriteString(fmt.Sprintf("- %s (x%d): $%.2f\n", platillo.NombrePlatillo, platillo.Cantidad, subtotal))
