@@ -7,10 +7,10 @@ type Message struct {
 }
 
 type Platillo struct {
-	ID               int     `json:"id"`
-	NombrePlatillo   string  `json:"nombre_platillo"`
-	PrecioPorCadaUno float64 `json:"precio_por_cada_uno"`
-	Cantidad         int     `json:"cantidad"`
+	ID           int     `json:"id"`
+	ServiceName  string  `json:"serviceName"`
+	UnitaryPrice float64 `json:"unitaryPrice"`
+	Quantity     int     `json:"quantity"`
 }
 
 type Order struct {

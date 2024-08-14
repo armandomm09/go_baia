@@ -55,9 +55,9 @@ func SaveBAIAMessage(messages baiaStructs.FinalGPTResponse, senderID string, cli
 		conversation.ID = uuid.New().String()
 		conversation.IsActive = true
 
-		var message baiaStructs.DBMessage
+		var message baiaStructs.DBAssistantMessage
 		message.Content = messages.Messages
-		message.Role = "user"
+		message.Role = "assistant"
 		message.Timestamp = time.Now().Unix()
 
 		conversation.Messages = append(conversation.Messages, message)
@@ -74,9 +74,75 @@ func SaveBAIAMessage(messages baiaStructs.FinalGPTResponse, senderID string, cli
 		panic(err)
 	}
 
-	var messageToAdd baiaStructs.DBMessage
+	var messageToAdd baiaStructs.DBAssistantMessage
 
 	messageToAdd.Content = messages.Messages
+	messageToAdd.Role = "assistant"
+	messageToAdd.Timestamp = time.Now().Unix()
+
+	update := bson.D{
+		{"$push", bson.D{
+			{"messages", messageToAdd},
+		}},
+	}
+
+	filter := bson.D{
+		{"userID", senderID},
+		{"isActive", true},
+	}
+
+	_, err = coll.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Message added to existing conversation")
+
+}
+
+func SaveUserMessage(message string, senderID string, client *mongo.Client) {
+
+	coll := client.Database("Sushi_Restaurant").Collection("Conversations")
+
+	var activeConvResult bson.M
+
+	err := coll.FindOne(context.TODO(), bson.D{{"isActive", true}, {"userID", senderID}}).
+		Decode(&activeConvResult)
+	// if err == mongo.ErrNoDocuments {
+	// 	// fmt.Printf("No document was found")
+	// 	// return
+	// 	var conversation baiaStructs.Conversation
+	// 	conversation.UserID = senderID
+	// 	conversation.ID = uuid.New().String()
+	// 	conversation.IsActive = true
+
+	// 	var message baiaStructs.DBAssistantMessage
+	// 	message.Content = messages.Messages
+	// 	message.Role = "assistant"
+	// 	message.Timestamp = time.Now().Unix()
+
+	// 	conversation.Messages = append(conversation.Messages, message)
+
+	// 	result, err := coll.InsertOne(context.TODO(), conversation)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+
+	// 	fmt.Printf("Inserted document with _id: %v\n", result.InsertedID)
+	// 	return
+	// }
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	var messageToAdd baiaStructs.DBAssistantMessage
+
+	// messageToAdd.Content = message
+	var newOutputMessage baiaStructs.OutputMessage
+	newOutputMessage.IsImage = false
+	newOutputMessage.Response = message
+
+	messageToAdd.Content = append(messageToAdd.Content, newOutputMessage)
 	messageToAdd.Role = "user"
 	messageToAdd.Timestamp = time.Now().Unix()
 
@@ -97,5 +163,57 @@ func SaveBAIAMessage(messages baiaStructs.FinalGPTResponse, senderID string, cli
 	}
 
 	fmt.Println("Message added to existing conversation")
+
+}
+
+func FinishOrder(serviceName string, userID string, order baiaStructs.Order, client *mongo.Client) {
+	var finalOrder baiaStructs.FinalOrder
+
+	finalOrder.ID = uuid.New().String()
+	finalOrder.CreationDate = time.Now().Unix()
+	finalOrder.State = "active"
+
+	finalOrder.Order = order
+
+	for i := 0; i < len(order.Order); i++ {
+		finalOrder.Total += float32(order.Order[i].Quantity) * float32(order.Order[i].Quantity)
+	}
+
+	finalOrder.DeliveryLocation.Latitude = 19.0414
+	finalOrder.DeliveryLocation.Longitude = 98.2063
+
+	finalOrder.DeliveryAddress.Street = "Cda San Jose"
+	finalOrder.DeliveryAddress.Number = 1411
+	finalOrder.DeliveryAddress.Suburb = "Sta Cruz Buenavista"
+	finalOrder.DeliveryAddress.Description = "Porton Gris"
+
+	finalOrder.DeliveryDate = time.Now().Add(30 * time.Minute).Unix()
+
+	finalOrder.Comments = "El sashimi que sea sin soya"
+
+	coll := client.Database("Sushi_Restaurant").Collection("Orders")
+
+	_, err := coll.InsertOne(context.TODO(), finalOrder)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	coll = client.Database("Sushi_Restaurant").Collection("Conversations")
+
+	filter := bson.D{
+		{"userID", userID},
+		{"isActive", true},
+	}
+
+	update := bson.D{
+		{"$set", bson.D{
+			{"isActive", false},
+		}},
+	}
+
+	_, err = coll.UpdateOne(context.TODO(), filter, update)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 }

@@ -19,15 +19,15 @@
     "orden": [
         {
             "id": 8,
-            "nombre_platillo": "Miso Soup",
-            "precio_por_cada_uno": 5.0,
-            "cantidad": 2
+            "serviceName": "Miso Soup",
+            "unitaryPrice": 5.0,
+            "quantity": 2
         },
         {
             "id": 7,
-            "nombre_platillo": "Donburi de Ternera",
-            "precio_por_cada_uno": 13.0,
-            "cantidad": 1
+            "serviceName": "Donburi de Ternera",
+            "unitaryPrice": 13.0,
+            "quantity": 1
         }
     ]
 }

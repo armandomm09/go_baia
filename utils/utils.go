@@ -12,24 +12,26 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SendRequest(sentMessage string, senderID string, client *mongo.Client) baiaStructs.FinalGPTResponse {
+func SendRequest(sentMessage string, senderID string, client *mongo.Client) (baiaStructs.FinalGPTResponse, baiaStructs.Order) {
 	var finalAnswer baiaStructs.FinalGPTResponse
 	// go realtimeService.SaveRawUserMessage(sentMessage, senderID, fbClient)
 
 	answerFromGPT := myOpenAi.AskGpt(sentMessage, senderID, client)
 
 	// go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
-
+	var actualOrder baiaStructs.Order
 	var input baiaStructs.GPTUnformattedResponse
 	if err := json.Unmarshal([]byte(answerFromGPT), &input); err != nil {
 		log.Printf("Error unmarshalling GPT response: %v", err)
 		var output baiaStructs.FinalGPTResponse
 		output.Messages[0].Response = answerFromGPT
-		return output
+		return output, baiaStructs.Order{}
 	}
+	actualOrder.Order = input.Order
 
 	finalAnswer = transform(input)
 	go mongoService.SaveBAIAMessage(finalAnswer, senderID, client)
+	go mongoService.SaveUserMessage(sentMessage, senderID, client)
 	// go realtimeService.SaveBAIAMessage(finalAnswer, senderID, fbClient)
 
 	// go realtimeService.SaveUserMessage(sentMessage, senderID, fbClient) // Use senderID from form values
@@ -40,7 +42,7 @@ func SendRequest(sentMessage string, senderID string, client *mongo.Client) baia
 	// 	return answerFromGPT
 	// }
 
-	return finalAnswer
+	return finalAnswer, actualOrder
 }
 
 func transform(input baiaStructs.GPTUnformattedResponse) baiaStructs.FinalGPTResponse {
@@ -58,8 +60,8 @@ func transform(input baiaStructs.GPTUnformattedResponse) baiaStructs.FinalGPTRes
 	}
 
 	for _, order := range input.Order {
-		orderSummary += fmt.Sprintf("- %s (x%d): $%.2f \n", order.NombrePlatillo, order.Cantidad, order.PrecioPorCadaUno*float64(order.Cantidad))
-		total += order.PrecioPorCadaUno * float64(order.Cantidad)
+		orderSummary += fmt.Sprintf("- %s (x%d): $%.2f \n", order.ServiceName, order.Quantity, order.UnitaryPrice*float64(order.Quantity))
+		total += order.UnitaryPrice * float64(order.Quantity)
 	}
 
 	if orderSummary != "" {
@@ -71,17 +73,10 @@ func transform(input baiaStructs.GPTUnformattedResponse) baiaStructs.FinalGPTRes
 
 	for _, msg := range input.Messages {
 		if msg.AfterOrder {
-			if msg.Response == fmt.Sprintf("El total a pagar es: $%.1f", total) {
-				output.Messages = append(output.Messages, baiaStructs.OutputMessage{
-					Response: msg.Response,
-					IsImage:  msg.IsImage,
-				})
-			} else {
-				output.Messages = append(output.Messages, baiaStructs.OutputMessage{
-					Response: msg.Response,
-					IsImage:  msg.IsImage,
-				})
-			}
+			output.Messages = append(output.Messages, baiaStructs.OutputMessage{
+				Response: msg.Response,
+				IsImage:  msg.IsImage,
+			})
 		}
 	}
 
@@ -119,9 +114,9 @@ func formatOrderFromJson(orderJson string) (string, error) {
 	var output strings.Builder
 	var total float64
 	for _, platillo := range orden.Order {
-		subtotal := platillo.PrecioPorCadaUno * float64(platillo.Cantidad)
+		subtotal := platillo.UnitaryPrice * float64(platillo.Quantity)
 		total += subtotal
-		output.WriteString(fmt.Sprintf("- %s (x%d): $%.2f\n", platillo.NombrePlatillo, platillo.Cantidad, subtotal))
+		output.WriteString(fmt.Sprintf("- %s (x%d): $%.2f\n", platillo.ServiceName, platillo.Quantity, subtotal))
 	}
 
 	output.WriteString(fmt.Sprintf("\nTotal del pedido: $%.2f\n", total))

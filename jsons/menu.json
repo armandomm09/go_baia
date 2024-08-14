@@ -3,84 +3,84 @@
   "platillos": [
       {
           "id": 1,
-          "nombre_platillo": "Sashimi de Salmón",
+          "serviceName": "Sashimi de Salmón",
           "descripcion": "Lonchas frescas de salmón servidas con salsa de soja y wasabi.",
           "precio": 18.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Fsashimi%20de%20salmon.jpeg?alt=media&token=f179e442-39b0-4f11-9d02-94efdbd6baeb"
       },
       {
           "id": 2,
-          "nombre_platillo": "Ramen de Tonkotsu",
+          "serviceName": "Ramen de Tonkotsu",
           "descripcion": "Ramen con caldo de cerdo, fideos, chashu, huevo, y cebolla verde.",
           "precio": 15.00,
           "foto":"https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Ftonkotsuramenfront.jpg?alt=media&token=147e6f4a-defc-4959-93c1-5384754c0719"
       },
       {
           "id": 3,
-          "nombre_platillo": "Tempura Mixta",
+          "serviceName": "Tempura Mixta",
           "descripcion": "Variedad de mariscos y verduras empanizados y fritos, servidos con salsa de tempura.",
           "precio": 12.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Ftempura%20mixta.jpeg?alt=media&token=97f3249d-1480-4943-bad4-4e5d5cadbaf2"
       },
       {
           "id": 4,
-          "nombre_platillo": "Sushi Roll California",
+          "serviceName": "Sushi Roll California",
           "descripcion": "Roll de sushi con cangrejo, aguacate y pepino, cubierto con semillas de sésamo.",
           "precio": 10.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Fcalifornia%20roll.jpeg?alt=media&token=3838a80d-598d-46d6-a188-7ea55b7bcdfb"
       },
       {
           "id": 5,
-          "nombre_platillo": "Yakitori",
+          "serviceName": "Yakitori",
           "descripcion": "Brochetas de pollo a la parrilla con salsa teriyaki.",
           "precio": 8.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FYakitori-7831-I.jpg?alt=media&token=ce4cc9c8-c08b-46f7-8f7e-832e3974f072"
       },
       {
           "id": 6,
-          "nombre_platillo": "Gyoza",
+          "serviceName": "Gyoza",
           "descripcion": "Empanadillas japonesas rellenas de cerdo y verduras, servidas con salsa de soja.",
           "precio": 7.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FGyoza.jpeg?alt=media&token=55b55748-327c-41f6-9680-b14c71e14092"
       },
       {
           "id": 7,
-          "nombre_platillo": "Donburi de Ternera",
+          "serviceName": "Donburi de Ternera",
           "descripcion": "Tazón de arroz cubierto con ternera cocida en salsa dulce.",
           "precio": 13.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Fdonburi%20ternera.jpeg?alt=media&token=301dfd0e-8d6c-4135-a4e8-b748c1443b24"
       },
       {
           "id": 8,
-          "nombre_platillo": "Miso Soup",
+          "serviceName": "Miso Soup",
           "descripcion": "Sopa de miso con tofu, algas y cebolla verde.",
           "precio": 5.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FMiso%20Soup.jpeg?alt=media&token=a51ba768-78cc-441f-9ce3-4761ff607eb8"
       },
       {
           "id": 9,
-          "nombre_platillo": "Matcha Ice Cream",
+          "serviceName": "Matcha Ice Cream",
           "descripcion": "Helado de té verde matcha.",
           "precio": 6.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FMatcha%20Ice%20Cream.jpeg?alt=media&token=6dd02be1-3255-45bc-ab8e-9bbd107a9d58"
       },
       {
           "id": 10,
-          "nombre_platillo": "Mochi",
+          "serviceName": "Mochi",
           "descripcion": "Bolas de masa de arroz rellenas de helado, en varios sabores.",
           "precio": 8.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FMochi%20.jpeg?alt=media&token=7a0498fc-6f72-41d6-a8e7-dddb32589cb9"
       },
       {
           "id": 11,
-          "nombre_platillo": "Té Verde",
+          "serviceName": "Té Verde",
           "descripcion": "Té verde japonés caliente.",
           "precio": 3.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2Fte%20verde.jpeg?alt=media&token=0fc0f4ec-b7bf-4d3b-ab8d-c7e1b70bf5ab"
       },
       {
           "id": 12,
-          "nombre_platillo": "Sake",
+          "serviceName": "Sake",
           "descripcion": "Vino de arroz japonés, servido frío o caliente.",
           "precio": 9.00,
           "foto": "https://firebasestorage.googleapis.com/v0/b/baia-1df5a.appspot.com/o/Sakura%20Sushi%2Ffotos%2FSake.jpeg?alt=media&token=fc8c239b-dad5-45ad-85fc-9d84a969f72a"

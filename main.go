@@ -89,7 +89,7 @@ func main() {
 
 	app = fiberapi.RegisterEndPoints(app, client)
 
-	app.Listen(":3000")
+	app.Listen(":8888")
 
 }
 

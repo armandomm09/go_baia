@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 
-	"firebase.google.com/go/v4/db"
 	"github.com/sashabaranov/go-openai"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -24,25 +23,25 @@ type Response struct {
 	FinishReason string  `json:"finish_reason"`
 }
 
-var jsonMenuData []byte
-var menuError error
-var jsonOrdersData []byte
-var ordersDataError error
-var fbClient *db.Client
+// var jsonMenuData []byte
+// var menuError error
+// var jsonOrdersData []byte
+// var ordersDataError error
+// var fbClient *db.Client
 
-func InitOpenaiService(jsonMenuData []byte, jsonOrdersData []byte, newFbClient *db.Client) {
-	jsonMenuData, menuError = ioutil.ReadFile("jsons/menu.json")
-	if menuError != nil {
-		fmt.Println("Error at parsing menu json")
-	}
+// func InitOpenaiService(jsonMenuData []byte, jsonOrdersData []byte, newFbClient *db.Client) {
+// 	jsonMenuData, menuError = ioutil.ReadFile("jsons/menu.json")
+// 	if menuError != nil {
+// 		fmt.Println("Error at parsing menu json")
+// 	}
 
-	jsonOrdersData, ordersDataError = ioutil.ReadFile("jsons/orders/order.json")
-	if ordersDataError != nil {
-		fmt.Println("Error at parsing order json")
-	}
+// 	jsonOrdersData, ordersDataError = ioutil.ReadFile("jsons/orders/order.json")
+// 	if ordersDataError != nil {
+// 		fmt.Println("Error at parsing order json")
+// 	}
 
-	fbClient = newFbClient
-}
+// 	fbClient = newFbClient
+// }
 
 func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 
@@ -66,22 +65,17 @@ func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role: openai.ChatMessageRoleSystem,
-				Content: `Eres un útil asistente de un restaurante diseñado para leer pedidos, compararlos con el menú "
-				y generar el pedido en formato JSON, asegúrate de que cada platillo de la orden del cliente
-				tenga los campos 'id', 'nombre_platillo', 'precio_por_cada_uno' y 'cantidad', debes devolver
-				un JSON con el siguiente formato: ` + string(jsonOrdersData) + ` si el usuario no ordena nada,
-				regresa el JSON vacío.Toma en cuenta que ese es un json de ejemplo, pero textualmente, se creativo y diferente con tu lenguaje. 
-				Este es el menu: ` + string(jsonMenuData) + `. Cuando te pidan ver el menu, en vez de dar ell json del menu,
-				regresa el mismo json de formato que te decia, y en algun mensaje, enseñas el menu. Se muy amigable, recuerda que nos puedes
-				ayudar a conseguir mas clientes si les caes bien, y no pongas tanto texto, se amable pero conciso
-				al mismo tiempo. Responde siempre en español y NO digas cosas como 'Aqui esta tu pedido en formato JSON'
-				solo di 'Aqui esta tu pedido' o de alguna otra forma. Uno de tus propositos es incitar a comprar aunque te digan que no quieren.
-				Cuando el usuario termine de hacer su orden, es muy importante que mandes un mensaje que diga "ORDEN COMPLETA", pero antes de eso tienes que
-				preguntarle y asegurarte de que en serio haya acabado su pedido. Cuando te digan que agrueges algo mas a su orden, 
-				en vez de solo decirles que lo agregaste, enseñales la orden y invitalos a comprar algo para acompañar eso.
-				Cuando vayas a enseñar el menu no mandes fotos, solo cuando vayas a hablar de pocos productos, no todos.
-				Y para mandar foto , en el "response" solo pones el link y el isImage en true, en ese mensaje no agregues mas texto
-				Aqui un ejemplo: ` + string(jsonOrderFotoData),
+				Content: `Eres un asistente de restaurante. Tu tarea es recibir pedidos, compararlos con el menú y devolver el pedido en formato JSON. 
+				Cada platillo en la orden debe tener los campos: id, serviceName, unitaryPrice y quantity. Devuelve el JSON en el formato:` + string(jsonOrdersData) + `. 
+				Si no hay pedido, la parte de "orden" regrasala vacia.
+				Cuando se solicite el menú, no devuelvas el JSON del menú directamente, en un mensaje enlista todo el menu. Aquí está el menú:` + string(jsonMenuData) + `.
+				Siempre responde en español. No resumas la orden en tus respuestas. Es decir, no hagas un resumen o un desglose de la orden 
+				simplemente muestra el pedido o el menú según se solicite. Cuando el array de message no vaya vacio, haz un mensaje del total, y en
+				ese mensaje, "afterOrder" seria true como en el ejemplo que te di.
+				Cuando el usuario te diga que ya es todo o que ya completo su pedido, enseñale un resumen de la orden, el total, y literalmente di: "ORDEN COMPLETA".
+				Si el usuario desea agregar algo más, muestra la orden actualizada y sugiéreles algo adicional para acompañar su pedido. 
+				Cuando envíes fotos, solo incluye el enlace y establece isImage en true, sin texto adicional. Ejemplo:` + string(jsonOrderFotoData) + `
+				Recuerda siempre mandar mensajes casuales que no siempre sea lo mismo, se muy emotivo y de vez en cuando usa emojis y siempre incita al cliente a comprar.`,
 			},
 		},
 	}
@@ -108,7 +102,7 @@ func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 		fmt.Println("There was an error" + err.Error())
 		return ""
 	}
-	log.Println(resp.Choices[0].Message.Content)
+	log.Println("GPT RESPONSE:", resp.Choices[0].Message.Content)
 	return resp.Choices[0].Message.Content
 }
 

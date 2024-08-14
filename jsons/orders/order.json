@@ -6,7 +6,7 @@
         "isImage": false
       },
       {
-        "response": "El total a pagar es: $62.0",
+        "response": "El total a pagar seria de: $62.0",
         "afterOrder": true,
         "isImage": false
       }
@@ -14,21 +14,21 @@
     "orden": [
       {
         "id": 3,
-        "nombre_platillo": "Ensalada de Nopales",
-        "precio_por_cada_uno": 12.0,
-        "cantidad": 2
+        "serviceName": "Ensalada de Nopales",
+        "unitaryPrice": 12.0,
+        "quantity": 2
       },
       {
         "id": 4,
-        "nombre_platillo": "Sopa de Xóchitl",
-        "precio_por_cada_uno": 20.0,
-        "cantidad": 1
+        "serviceName": "Sopa de Xóchitl",
+        "unitaryPrice": 20.0,
+        "quantity": 1
       },
       {
         "id": 5,
-        "nombre_platillo": "Crema de Poblano",
-        "precio_por_cada_uno": 18.0,
-        "cantidad": 1
+        "serviceName": "Crema de Poblano",
+        "unitaryPrice": 18.0,
+        "quantity": 1
       }
     ]
   }
