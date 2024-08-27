@@ -172,11 +172,12 @@ func FinishOrder(serviceName string, userID string, order baiaStructs.Order, cli
 	finalOrder.ID = uuid.New().String()
 	finalOrder.CreationDate = time.Now().Unix()
 	finalOrder.State = "active"
+	finalOrder.UserID = userID
 
 	finalOrder.Order = order
 
 	for i := 0; i < len(order.Order); i++ {
-		finalOrder.Total += float32(order.Order[i].Quantity) * float32(order.Order[i].Quantity)
+		finalOrder.Total += float32(order.Order[i].Quantity) * float32(order.Order[i].UnitaryPrice)
 	}
 
 	finalOrder.DeliveryLocation.Latitude = 19.0414

@@ -51,7 +51,7 @@ async function sendGPTAudio(filePath, senderID) {
 
 
 async function sendGPTMessage(mensaje, senderID) {
-    const response = await fetch("http://localhost:8888/baia/askGPT/text", {
+    const response = await fetch("http://10.50.94.111:8000/baia/askGPT/text", {
         method: 'POST',
         body: JSON.stringify({ // Convert data to JSON string
             "question": mensaje,
@@ -121,7 +121,7 @@ client.on('message', async message => {
 
 client.on('ready', async () => {
     console.log('Client is ready!');
-    await client.sendMessage("5212721976963@c.us", "hola")
+    
 
 });
 

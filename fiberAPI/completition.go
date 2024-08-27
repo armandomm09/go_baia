@@ -4,15 +4,12 @@ import (
 	"baia_service/mongoService"
 	"baia_service/utils"
 	"fmt"
-	"io"
 	"log"
 	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 )
 
 type SendMessageInputT struct {
@@ -30,6 +27,7 @@ type SendMessageOutputT struct {
 }
 
 func RegisterEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
+	app = RegisterDBEndPoints(app, mongoClient)
 
 	app.Post("/baia/askGPT/text", func(c *fiber.Ctx) error {
 		start := time.Now()
@@ -44,35 +42,6 @@ func RegisterEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 		}
 		log.Printf("Tiempo de respuesta: %v", time.Since(start))
 		return c.JSON(answer)
-	})
-
-	app.Get("/image/:id", func(c *fiber.Ctx) error {
-
-		db := mongoClient.Database("Sushi_Restaurant")
-		bucket, err := gridfs.NewBucket(db)
-		if err != nil {
-			panic(err)
-		}
-
-		idHex := c.Params("id")
-		id, err := primitive.ObjectIDFromHex(idHex)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Invalid file ID")
-		}
-
-		downloadStream, err := bucket.OpenDownloadStream(id)
-		if err != nil {
-			return fiber.NewError(fiber.StatusNotFound, "File not found")
-		}
-		defer downloadStream.Close()
-
-		c.Set("Content-Type", "image/jpeg") // Establece el tipo de contenido adecuado para la imagen
-		_, err = io.Copy(c.Response().BodyWriter(), downloadStream)
-		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Error reading file")
-		}
-
-		return nil
 	})
 
 	return app

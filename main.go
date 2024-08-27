@@ -13,6 +13,7 @@ import (
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -87,9 +88,15 @@ func main() {
 
 	app := fiber.New()
 
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*", // Permitir todos los orígenes (no recomendado para producción)
+		AllowMethods: "GET,POST,HEAD,PUT,DELETE,OPTIONS",
+		AllowHeaders: "*", //Origin, Content-Type, Accept
+	}))
+
 	app = fiberapi.RegisterEndPoints(app, client)
 
-	app.Listen(":8888")
+	app.Listen("10.50.94.111:8000")
 
 }
 
