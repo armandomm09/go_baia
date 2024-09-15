@@ -113,7 +113,7 @@ client.on('message', async message => {
                     }
                 }
             } catch (error) {
-                console.log(error)    
+                console.log(`Error sending message as ${error}`)    
             }
         }
     }
