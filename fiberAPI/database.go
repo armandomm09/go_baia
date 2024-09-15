@@ -20,7 +20,7 @@ import (
 
 func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 
-	app.Get("/orders/:service/active", func(c *fiber.Ctx) error {
+	app.Get("/:service/orders/active", func(c *fiber.Ctx) error {
 		service := c.Params("service") // Almacenar el valor antes de entrar en el StreamWriter
 
 		c.Set("Content-Type", "text/event-stream; charset=utf-8")
@@ -66,7 +66,7 @@ func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 						break
 					}
 					currentJson = jsonData
-					// fmt.Println("Datos enviados:", string(jsonData))
+					fmt.Println("Datos enviados:", string(jsonData))
 				}
 				if err := w.Flush(); err != nil {
 					fmt.Printf("Error al hacer flush: %v. Cerrando la conexión HTTP.\n", err)
@@ -76,6 +76,54 @@ func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 				// time.Sleep(2 * time.Microsecond)
 			}
 		}))
+		return nil
+	})
+
+	app.Patch("/:service/orders/:id/finishOrder", func(c *fiber.Ctx) error {
+		coll := mongoClient.Database("Sushi_Restaurant").Collection("Orders")
+		oid := c.Params("id") // Almacenar el valor antes de entrar en el StreamWriter
+
+		var result bson.M
+
+		err := coll.FindOne(context.TODO(), bson.D{{"state", "active"}, {"ID", oid}}).
+			Decode(&result)
+		if err == mongo.ErrNoDocuments {
+			fmt.Printf("No document was found")
+		}
+
+		if err != nil {
+			panic(err)
+		}
+		return c.SendString("Succesfull")
+	})
+
+	//Gets the specific image using ID
+	app.Get("/image/:id", func(c *fiber.Ctx) error {
+
+		db := mongoClient.Database("Sushi_Restaurant")
+		bucket, err := gridfs.NewBucket(db)
+		if err != nil {
+			panic(err)
+		}
+
+		idHex := c.Params("id")
+		id, err := primitive.ObjectIDFromHex(idHex)
+		if err != nil {
+			return fiber.NewError(fiber.StatusBadRequest, "Invalid file ID")
+		}
+
+		downloadStream, err := bucket.OpenDownloadStream(id)
+		if err != nil {
+			return fiber.NewError(fiber.StatusNotFound, "File not found")
+		}
+		defer downloadStream.Close()
+
+		c.Set("Content-Type", "image/jpeg") // Establece el tipo de contenido adecuado para la imagen
+		_, err = io.Copy(c.Response().BodyWriter(), downloadStream)
+		if err != nil {
+			return fiber.NewError(fiber.StatusInternalServerError, "Error reading file")
+		}
+
 		return nil
 	})
 
@@ -106,36 +154,6 @@ func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 				time.Sleep(2 * time.Second)
 			}
 		}))
-
-		return nil
-	})
-
-	//Gets the specific image using ID
-	app.Get("/image/:id", func(c *fiber.Ctx) error {
-
-		db := mongoClient.Database("Sushi_Restaurant")
-		bucket, err := gridfs.NewBucket(db)
-		if err != nil {
-			panic(err)
-		}
-
-		idHex := c.Params("id")
-		id, err := primitive.ObjectIDFromHex(idHex)
-		if err != nil {
-			return fiber.NewError(fiber.StatusBadRequest, "Invalid file ID")
-		}
-
-		downloadStream, err := bucket.OpenDownloadStream(id)
-		if err != nil {
-			return fiber.NewError(fiber.StatusNotFound, "File not found")
-		}
-		defer downloadStream.Close()
-
-		c.Set("Content-Type", "image/jpeg") // Establece el tipo de contenido adecuado para la imagen
-		_, err = io.Copy(c.Response().BodyWriter(), downloadStream)
-		if err != nil {
-			return fiber.NewError(fiber.StatusInternalServerError, "Error reading file")
-		}
 
 		return nil
 	})

@@ -51,7 +51,7 @@ async function sendGPTAudio(filePath, senderID) {
 
 
 async function sendGPTMessage(mensaje, senderID) {
-    const response = await fetch("http://10.50.94.111:8000/baia/askGPT/text", {
+    const response = await fetch("http://172.17.7.156:8000/baia/askGPT/text", {
         method: 'POST',
         body: JSON.stringify({ // Convert data to JSON string
             "question": mensaje,
@@ -73,7 +73,7 @@ async function sendGPTMessage(mensaje, senderID) {
 
 client.on('message', async message => {
     console.log(message.from)
-    if (message.from === "5212223201384@c.us" || message.from === "5212721976963@c.us") {
+    if (message.from === "5212223201384@c.us" || message.from === "5212214239597@c.us") {
         console.log(message.body)
         console.log(message.from)
         if (message.hasMedia) {
