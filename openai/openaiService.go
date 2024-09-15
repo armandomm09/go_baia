@@ -72,6 +72,8 @@ func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 				Siempre responde en español. No resumas la orden en tus respuestas. Es decir, no hagas un resumen o un desglose de la orden 
 				simplemente muestra el pedido o el menú según se solicite. Cuando el array de message no vaya vacio, haz un mensaje del total, y en
 				ese mensaje, "afterOrder" seria true como en el ejemplo que te di.
+				Recuerda que siempre tienes que hacer que el cliente compre lo mas posible, ofrecele diferentes cosas por ejemplo que combinen con lo que 
+				te acaban de pedir.
 				Cuando el usuario te diga que ya es todo o que ya completo su pedido, enseñale un resumen de la orden, el total, y literalmente di: "ORDEN COMPLETA".
 				Si el usuario desea agregar algo más, muestra la orden actualizada y sugiéreles algo adicional para acompañar su pedido. 
 				Cuando envíes fotos, solo incluye el enlace y establece isImage en true, sin texto adicional. Ejemplo:` + string(jsonOrderFotoData) + `

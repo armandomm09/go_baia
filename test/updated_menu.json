@@ -1,0 +1,89 @@
+{
+  "restaurant_name": "Sakura Sushi",
+  "services": [
+    {
+      "id": 1,
+      "service_name": "Sashimi de Salmón",
+      "description": "Lonchas frescas de salmón servidas con salsa de soja y wasabi.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835aa79880177fb8f8c8"
+    },
+    {
+      "id": 2,
+      "service_name": "Ramen de Tonkotsu",
+      "description": "Ramen con caldo de cerdo, fideos, chashu, huevo, y cebolla verde.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835aa79880177fb8f8ca"
+    },
+    {
+      "id": 3,
+      "service_name": "Tempura Mixta",
+      "description": "Variedad de mariscos y verduras empanizados y fritos, servidos con salsa de tempura.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835aa79880177fb8f8cc"
+    },
+    {
+      "id": 4,
+      "service_name": "Sushi Roll California",
+      "description": "Roll de sushi con cangrejo, aguacate y pepino, cubierto con semillas de sésamo.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ba79880177fb8f8ce"
+    },
+    {
+      "id": 5,
+      "service_name": "Yakitori",
+      "description": "Brochetas de pollo a la parrilla con salsa teriyaki.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ba79880177fb8f8d0"
+    },
+    {
+      "id": 6,
+      "service_name": "Gyoza",
+      "description": "Empanadillas japonesas rellenas de cerdo y verduras, servidas con salsa de soja.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ca79880177fb8f8d2"
+    },
+    {
+      "id": 7,
+      "service_name": "Donburi de Ternera",
+      "description": "Tazón de arroz cubierto con ternera cocida en salsa dulce.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ca79880177fb8f8d4"
+    },
+    {
+      "id": 8,
+      "service_name": "Miso Soup",
+      "description": "Sopa de miso con tofu, algas y cebolla verde.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ca79880177fb8f8d6"
+    },
+    {
+      "id": 9,
+      "service_name": "Matcha Ice Cream",
+      "description": "Helado de té verde matcha.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835da79880177fb8f8d8"
+    },
+    {
+      "id": 10,
+      "service_name": "Mochi",
+      "description": "Bolas de masa de arroz rellenas de helado, en varios sabores.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835da79880177fb8f8da"
+    },
+    {
+      "id": 11,
+      "service_name": "Té Verde",
+      "description": "Té verde japonés caliente.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ea79880177fb8f8de"
+    },
+    {
+      "id": 12,
+      "service_name": "Sake",
+      "description": "Vino de arroz japonés, servido frío o caliente.",
+      "price": "",
+      "photo": "http://localhost:3000/image/66e6835ea79880177fb8f8e0"
+    }
+  ]
+}

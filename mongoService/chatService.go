@@ -206,13 +206,12 @@ func FinishOrder(serviceName string, userID string, order baiaStructs.Order, cli
 		{"isActive", true},
 	}
 
-	update := bson.D{
-		{"$set", bson.D{
-			{"isActive", false},
-		}},
-	}
-
-	_, err = coll.UpdateOne(context.TODO(), filter, update)
+	// update := bson.D{
+	// 	{"$set", bson.D{
+	// 		{"isActive", false},
+	// 	}},
+	// }
+	_, err = coll.InsertOne(context.TODO(), filter)
 	if err != nil {
 		log.Fatal(err)
 	}

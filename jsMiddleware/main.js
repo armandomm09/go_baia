@@ -51,7 +51,7 @@ async function sendGPTAudio(filePath, senderID) {
 
 
 async function sendGPTMessage(mensaje, senderID) {
-    const response = await fetch("http://172.17.7.156:8000/baia/askGPT/text", {
+    const response = await fetch("http://localhost:8000/baia/askGPT/text", {
         method: 'POST',
         body: JSON.stringify({ // Convert data to JSON string
             "question": mensaje,
@@ -98,18 +98,22 @@ client.on('message', async message => {
             mediaContador++
 
         } else {
-            const responseMessages = await sendGPTMessage(message.body, message.from)
-            const messageFrom = message.from
-            console.log(JSON.stringify(responseMessages))
-            for (let i = 0; i < responseMessages.length; i++) {
-                if (responseMessages[i]["isImage"]) {
-                    let imageToSend = await MessageMedia.fromUrl(responseMessages[i]["response"])
-                    await client.sendMessage(messageFrom, imageToSend)
-                } else {
-                    console.log(JSON.stringify(responseMessages[i]))
-                    console.log("Message send")
-                    await client.sendMessage(messageFrom, responseMessages[i]['response'])
+            try{
+                const responseMessages = await sendGPTMessage(message.body, message.from)
+                const messageFrom = message.from
+                console.log(JSON.stringify(responseMessages))
+                for (let i = 0; i < responseMessages.length; i++) {
+                    if (responseMessages[i]["isImage"]) {
+                        let imageToSend = await MessageMedia.fromUrl(responseMessages[i]["response"])
+                        await client.sendMessage(messageFrom, imageToSend)
+                    } else {
+                        console.log(JSON.stringify(responseMessages[i]))
+                        console.log("Message send")
+                        await client.sendMessage(messageFrom, responseMessages[i]['response'])
+                    }
                 }
+            } catch (error) {
+                console.log(error)    
             }
         }
     }
