@@ -57,7 +57,7 @@ func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 
 	jsonOrderFotoData, err := ioutil.ReadFile("jsons/orders/fotoResultEG.json")
 	if err != nil {
-		fmt.Println("Error at parsing order json")
+		fmt.Println("Error at parsing order as json")
 	}
 
 	Req := openai.ChatCompletionRequest{

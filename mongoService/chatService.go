@@ -180,8 +180,8 @@ func FinishOrder(serviceName string, userID string, order baiaStructs.Order, cli
 		finalOrder.Total += float32(order.Order[i].Quantity) * float32(order.Order[i].UnitaryPrice)
 	}
 
-	finalOrder.DeliveryLocation.Latitude = 19.0414
-	finalOrder.DeliveryLocation.Longitude = 98.2063
+	finalOrder.DeliveryLocation.Latitude = 19.041
+	finalOrder.DeliveryLocation.Longitude = 98.206
 
 	finalOrder.DeliveryAddress.Street = "Cda San Jose"
 	finalOrder.DeliveryAddress.Number = 1411

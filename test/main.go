@@ -86,7 +86,7 @@ func main() {
 			log.Fatalf("Failed to download image: %s", resp.Status)
 		}
 
-		uploadOpts := options.GridFSUpload().SetMetadata(bson.D{{"meta data", "first"}})
+		uploadOpts := options.GridFSUpload().SetMetadata(bson.D{{"metadata", "first"}})
 
 		imageName := strings.ReplaceAll(menu.Services[i].ServiceName, " ", "_")
 		objectID, err := bucket.UploadFromStream(fmt.Sprintf("%v.jpeg", imageName), resp.Body, uploadOpts)
