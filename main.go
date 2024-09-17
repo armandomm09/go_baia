@@ -14,6 +14,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -96,7 +97,9 @@ func main() {
 
 	app = fiberapi.RegisterEndPoints(app, client)
 
-	app.Listen("10.50.94.111:8000")
+	app.Get("/dashboard", monitor.New())
+
+	app.Listen(":8000")
 
 }
 

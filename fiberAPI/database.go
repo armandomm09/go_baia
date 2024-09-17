@@ -2,7 +2,6 @@ package fiberapi
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -21,62 +20,42 @@ import (
 func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 
 	app.Get("/:service/orders/active", func(c *fiber.Ctx) error {
-		service := c.Params("service") // Almacenar el valor antes de entrar en el StreamWriter
+		service := c.Params("service")
 
-		c.Set("Content-Type", "text/event-stream; charset=utf-8")
-		c.Set("Cache-Control", "no-cache")
-		c.Set("Connection", "keep-alive")
-		c.Set("Transfer-Encoding", "chunked")
-		var currentJson []byte
-		c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {
-			fmt.Println("WRITER")
+		// Conectar a la base de datos
+		db := mongoClient.Database(service)
+		coll := db.Collection("Orders")
 
-			for {
-				// Usa la variable almacenada en lugar de acceder a c.Params directamente
-				db := mongoClient.Database(service)
-				coll := db.Collection("Orders")
+		// Buscar las órdenes con estado "active"
+		var results []bson.M
+		cursor, err := coll.Find(
+			context.TODO(),
+			bson.M{"state": "active"},
+			options.Find().SetSort(bson.D{{"creationDate", -1}}),
+		)
+		if err != nil {
+			fmt.Println("Error al buscar las órdenes:", err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Error al buscar las órdenes")
+		}
 
-				var results []bson.M
+		// Convertir los resultados en una lista
+		if err = cursor.All(context.TODO(), &results); err != nil {
+			fmt.Println("Error al decodificar las órdenes:", err)
+			cursor.Close(context.TODO())
+			return c.Status(fiber.StatusInternalServerError).SendString("Error al decodificar las órdenes")
+		}
+		cursor.Close(context.TODO()) // Cerrar el cursor después de la consulta
 
-				cursor, err := coll.Find(
-					context.TODO(),
-					bson.M{"state": "active"},
-					options.Find().SetSort(bson.D{{"creationDate", -1}}),
-				)
-				if err != nil {
-					fmt.Println("Error al buscar las órdenes:", err)
-					break
-				}
-				defer cursor.Close(context.TODO())
+		// Convertir los resultados a JSON
+		jsonData, err := json.MarshalIndent(results, "", "    ")
+		if err != nil {
+			fmt.Println("Error al convertir a JSON:", err)
+			return c.Status(fiber.StatusInternalServerError).SendString("Error al convertir a JSON")
+		}
 
-				if err = cursor.All(context.TODO(), &results); err != nil {
-					fmt.Println("Error al decodificar las órdenes:", err)
-					break
-				}
-
-				jsonData, err := json.MarshalIndent(results, "", "    ")
-				if err != nil {
-					fmt.Println("Error al convertir a JSON:", err)
-					break
-				}
-				if !bytes.Equal(currentJson, jsonData) {
-					fmt.Println("DIF")
-					if _, err := w.Write([]byte("" + string(jsonData) + "\n\n")); err != nil {
-						fmt.Println("Error al escribir los datos:", err)
-						break
-					}
-					currentJson = jsonData
-					fmt.Println("Datos enviados:", string(jsonData))
-				}
-				if err := w.Flush(); err != nil {
-					fmt.Printf("Error al hacer flush: %v. Cerrando la conexión HTTP.\n", err)
-					break
-				}
-
-				// time.Sleep(2 * time.Microsecond)
-			}
-		}))
-		return nil
+		// Devolver los datos en la respuesta
+		c.Set("Content-Type", "application/json")
+		return c.Status(fiber.StatusOK).Send(jsonData)
 	})
 
 	app.Patch("/:service/orders/:id/finishOrder", func(c *fiber.Ctx) error {
