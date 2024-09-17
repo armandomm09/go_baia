@@ -61,7 +61,7 @@ func AskGpt(message string, userID string, mongoClient *mongo.Client) string {
 	}
 
 	Req := openai.ChatCompletionRequest{
-		Model: openai.GPT4oMini,
+		Model: "gpt-4o-mini",
 		Messages: []openai.ChatCompletionMessage{
 			{
 				Role: openai.ChatMessageRoleSystem,
