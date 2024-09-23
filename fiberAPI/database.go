@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -19,6 +20,14 @@ import (
 
 func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 
+	// @Summary Obtiene todas las órdenes activas
+	// @Description Retorna una lista de órdenes con estado "active" para un servicio específico
+	// @Tags Orders
+	// @Param service path string true "Nombre del servicio"
+	// @Produce json
+	// @Success 200 {array} bson.M
+	// @Failure 500 {string} string "Error al buscar o decodificar las órdenes"
+	// @Router /{service}/orders/active [get]
 	app.Get("/:service/orders/active", func(c *fiber.Ctx) error {
 		service := c.Params("service")
 
@@ -58,25 +67,70 @@ func RegisterDBEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 		return c.Status(fiber.StatusOK).Send(jsonData)
 	})
 
+	// @Summary Finaliza una orden
+	// @Description Cambia el estado de una orden a "inactive" por ID en un servicio específico
+	// @Tags Orders
+	// @Param service path string true "Nombre del servicio"
+	// @Param id path string true "ID de la orden"
+	// @Produce text/plain
+	// @Success 200 {string} string "Order Finished"
+	// @Failure 500 {string} string "Error at updating doc"
+	// @Router /{service}/orders/{id}/finishOrder [patch]
 	app.Patch("/:service/orders/:id/finishOrder", func(c *fiber.Ctx) error {
 		coll := mongoClient.Database("Sushi_Restaurant").Collection("Orders")
 		oid := c.Params("id") // Almacenar el valor antes de entrar en el StreamWriter
+		log.Println(oid)
+		filter := bson.D{{"ID", oid}}
 
-		var result bson.M
+		update := bson.D{{"$set", bson.D{{"state", "inactive"}}}}
 
-		err := coll.FindOne(context.TODO(), bson.D{{"state", "active"}, {"ID", oid}}).
-			Decode(&result)
-		if err == mongo.ErrNoDocuments {
-			fmt.Printf("No document was found")
-		}
+		result, err := coll.UpdateOne(context.TODO(), filter, update)
 
 		if err != nil {
+			return c.SendString(fmt.Sprintf("Error at updating doc: %v", err))
 			panic(err)
 		}
-		return c.SendString("Succesfull")
+		log.Println(result)
+		return c.SendString("Order Finished")
 	})
 
-	//Gets the specific image using ID
+	// @Summary Reactiva una orden
+	// @Description Cambia el estado de una orden a "active" por ID en un servicio específico
+	// @Tags Orders
+	// @Param service path string true "Nombre del servicio"
+	// @Param id path string true "ID de la orden"
+	// @Produce text/plain
+	// @Success 200 {string} string "Order Reactivated"
+	// @Failure 500 {string} string "Error at updating doc"
+	// @Router /{service}/orders/{id}/reactivateOrder [patch]
+	app.Patch("/:service/orders/:id/reactivateOrder", func(c *fiber.Ctx) error {
+		coll := mongoClient.Database("Sushi_Restaurant").Collection("Orders")
+		oid := c.Params("id") // Almacenar el valor antes de entrar en el StreamWriter
+		log.Println(oid)
+		filter := bson.D{{"ID", oid}}
+
+		update := bson.D{{"$set", bson.D{{"state", "active"}}}}
+
+		result, err := coll.UpdateOne(context.TODO(), filter, update)
+
+		if err != nil {
+			return c.SendString(fmt.Sprintf("Error at updating doc: %v", err))
+			panic(err)
+		}
+		log.Println(result)
+		return c.SendString("Order Reactivated")
+	})
+
+	// @Summary Obtiene una imagen por ID
+	// @Description Descarga una imagen de GridFS usando su ID
+	// @Tags Images
+	// @Param id path string true "ID de la imagen"
+	// @Produce image/jpeg
+	// @Success 200 {file} file
+	// @Failure 400 {string} string "Invalid file ID"
+	// @Failure 404 {string} string "File not found"
+	// @Failure 500 {string} string "Error reading file"
+	// @Router /image/{id} [get]
 	app.Get("/image/:id", func(c *fiber.Ctx) error {
 
 		db := mongoClient.Database("Sushi_Restaurant")

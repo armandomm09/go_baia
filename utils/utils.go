@@ -21,6 +21,7 @@ func SendRequest(sentMessage string, senderID string, client *mongo.Client) (bai
 	// go realtimeService.SaveRawBAIAMessage(answerFromGPT, senderID, fbClient)
 	var actualOrder baiaStructs.Order
 	var input baiaStructs.GPTUnformattedResponse
+
 	if err := json.Unmarshal([]byte(answerFromGPT), &input); err != nil {
 		log.Printf("Error unmarshalling GPT response: %v", err)
 		var output baiaStructs.FinalGPTResponse

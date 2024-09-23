@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/swagger"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -98,6 +99,8 @@ func main() {
 	app = fiberapi.RegisterEndPoints(app, client)
 
 	app.Get("/dashboard", monitor.New())
+
+	app.Get("/swagger/*", swagger.HandlerDefault)
 
 	app.Listen(":8000")
 

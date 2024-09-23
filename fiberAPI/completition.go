@@ -36,6 +36,7 @@ func RegisterEndPoints(app *fiber.App, mongoClient *mongo.Client) *fiber.App {
 			return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
 		}
 		answer, actualOrder := utils.SendRequest(input.Question, input.SenderID, mongoClient)
+
 		if strings.Contains(fmt.Sprintf("%v", answer), "ORDEN COMPLETA") {
 			mongoService.FinishOrder("Sushi_Restaurant", input.SenderID, actualOrder, mongoClient)
 			log.Println(" ORDEN COMPLETA")
