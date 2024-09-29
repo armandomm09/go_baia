@@ -4,7 +4,7 @@ BAIA is an innovative AI solution designed to enhance communication between busi
 
 ## Project Description
 
-BAIA is a bot that facilitates WhatsApp communication management for businesses, enabling smooth and automated interaction with customers. The bot can understand and respond to custom commands, providing a user experience tailored to the specific needs of each business.
+BAIA is a bot that facilitates WhatsApp communication management for businesses, enabling smooth and automated interaction with customers. The bot is able to understand and respond to custom commands, providing a user experience tailored to the specific needs of each business.
 
 ### Key Features
 
