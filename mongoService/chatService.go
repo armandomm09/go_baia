@@ -24,7 +24,7 @@ func GetUserChatHistory(userID string, client *mongo.Client, Req openai.ChatComp
 		if err == mongo.ErrNoDocuments {
 			fmt.Println("No active conversation found for user:", userID)
 		} else {
-			fmt.Println("Error getting document:", err)
+			fmt.Println("Error getting the document:", err)
 		}
 		return Req
 	}
