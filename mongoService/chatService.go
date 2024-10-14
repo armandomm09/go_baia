@@ -22,7 +22,7 @@ func GetUserChatHistory(userID string, client *mongo.Client, Req openai.ChatComp
 	err := coll.FindOne(ctx, bson.D{{"userID", userID}, {"isActive", true}}).Decode(&conversation)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			fmt.Println("No active conversation found for user:", userID)
+			fmt.Println("No active conversations found for user:", userID)
 		} else {
 			fmt.Println("Error getting the document:", err)
 		}
