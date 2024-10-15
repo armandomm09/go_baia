@@ -63,7 +63,7 @@ async function sendGPTMessage(mensaje, senderID) {
     });
 
     if (!response.ok) {
-        console.log("Error asking gpt: " + response.status);
+        console.log("Error fetching gpt: " + response.status);
         return "Hubo un error"
     } else {
         const responseData = await response.json(); // Parse JSON response
