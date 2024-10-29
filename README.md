@@ -17,7 +17,7 @@ BAIA is a bot that facilitates WhatsApp communication management for businesses,
 
 ### Technologies Used
 
-- **Frontend:** Flutter, for a modern and accessible user interface in both the management app and the bot interface.
+- **Frontend:** Flutter for a modern and accessible user interface in both the management app and the bot interface.
 - **Backend:** 
   - **Go:** Handles the business logic and API, providing robust and efficient server-side processing.
   - **Node.js:** Manages the connection with WhatsApp, capturing incoming messages, passing them to the Go API, and sending the response back to the user via WhatsApp.
